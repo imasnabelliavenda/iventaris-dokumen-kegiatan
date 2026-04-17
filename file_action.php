@@ -77,8 +77,8 @@ $query = mysqli_query($koneksi, "
 ");
 $file = mysqli_fetch_assoc($query);
 
-if (!$file || ($user_role === 'user' && $file['user_id'] != $user_id)) {
-    die("File tidak ditemukan atau Anda tidak memiliki akses.");
+if (!$file) {
+    die("File tidak ditemukan.");
 }
 
 $file_path = __DIR__ . '/uploads/' . $file['nama_file'];

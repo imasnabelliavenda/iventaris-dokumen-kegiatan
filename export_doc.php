@@ -12,7 +12,7 @@ $search    = isset($_GET['q']) ? mysqli_real_escape_string($koneksi, trim($_GET[
 $folder_id = isset($_GET['folder']) ? (int) $_GET['folder'] : null;
 
 $is_search_mode = !empty($search);
-$user_filter = ($user_role === 'user') ? " AND d.user_id = " . (int)$user_id : "";
+$user_filter = ""; // Semua user bisa mengekspor semua dokumen (arsip publik)
 
 if ($is_search_mode) {
     $q = "SELECT d.*, fol.nama_folder as nama_folder_parent 

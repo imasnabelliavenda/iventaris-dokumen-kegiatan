@@ -2,10 +2,11 @@
 ob_start();
 include 'config/koneksi.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    header("Location: dashboard.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit;
 }
+$user_role = $_SESSION['user_role'];
 
 $folder_message = "";
 
@@ -21,7 +22,7 @@ if (isset($_POST['buat'])) {
 }
 
 // Aksi Edit Kategori
-if (isset($_POST['edit'])) {
+if (isset($_POST['edit']) && $user_role === 'admin') {
     $id_edit = (int)$_POST['folder_id'];
     $nama_edit = mysqli_real_escape_string($koneksi, $_POST['nama_folder_edit']);
     if (mysqli_query($koneksi, "UPDATE folders SET nama_folder = '$nama_edit' WHERE id = $id_edit")) {
@@ -33,7 +34,7 @@ if (isset($_POST['edit'])) {
 }
 
 // Aksi Hapus Kategori beserta seluruh isinya
-if (isset($_POST['hapus'])) {
+if (isset($_POST['hapus']) && $user_role === 'admin') {
     $id_hapus = (int)$_POST['folder_id_hapus'];
     
     // Tarik list semua attachment fisik dari semua dokumen yang ada di dalam folder ini
@@ -155,12 +156,16 @@ $folders_data = mysqli_query($koneksi, "
                             </td>
                             <td>
                                 <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                                    <?php if ($user_role === 'admin'): ?>
                                     <button onclick="openEditModal(<?php echo $f['id']; ?>, '<?php echo addslashes(htmlspecialchars($f['nama_folder'])); ?>')" class="btn btn-warning btn-icon" title="Ubah Nama">
                                         <i data-feather="edit-2" style="width:14px;height:14px;"></i>
                                     </button>
                                     <button onclick="openDeleteModal(<?php echo $f['id']; ?>, '<?php echo addslashes(htmlspecialchars($f['nama_folder'])); ?>', <?php echo $f['total_docs']; ?>)" class="btn btn-danger btn-icon" title="Hapus Kategori">
                                         <i data-feather="trash-2" style="width:14px;height:14px;"></i>
                                     </button>
+                                    <?php else: ?>
+                                    <span style="font-size:0.8rem;color:var(--text-light);font-style:italic;">Hanya Admin</span>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
